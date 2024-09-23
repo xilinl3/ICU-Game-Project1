@@ -14,8 +14,8 @@ public class DialogueManager : MonoBehaviour
     public bool isDialogueActive = false;
     public float typingSpeed = 1.0f;
     public Animator animator;
-    
-    public Canvas DialogueCanvas;
+
+    public GameObject DialoguePanel;
     private bool isTyping = false; 
     private bool isSentenceComplete = false;
     private string currentSentence = ""; // 当前正在显示的句子
@@ -26,16 +26,16 @@ public class DialogueManager : MonoBehaviour
         if (Instance == null)
             Instance = this;
         lines = new Queue<DialogueLine>();
-        if (DialogueCanvas.gameObject.activeSelf)
+        if (DialoguePanel.activeSelf)
         {
-            DialogueCanvas.gameObject.SetActive(false);
+            DialoguePanel.SetActive(false);
         }
     }
 
     public void StartDialogue(Dialogue dialogue)
     {
         isDialogueActive = true;
-        DialogueCanvas.gameObject.SetActive(true);
+        DialoguePanel.SetActive(true);
 
         //animator.Play("show");
 
@@ -92,7 +92,7 @@ public class DialogueManager : MonoBehaviour
     void EndDialogue()
     {
         isDialogueActive = false;
-        DialogueCanvas.gameObject.SetActive(false);
+        DialoguePanel.SetActive(false);
         //animator.Play("hide");
     }
 
