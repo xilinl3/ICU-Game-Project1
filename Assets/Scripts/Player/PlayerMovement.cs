@@ -9,10 +9,16 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 5f;
     private Rigidbody2D rb;
     private bool onGround;
+    public bool IsRight;
+
+    public GameObject CameraFllowGo;
+    private CameraFllowObject _cameraFollowObject;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();  
+
+        _cameraFollowObject = CameraFllowGo.GetComponent<CameraFllowObject>();
     }
 
     void Update()
@@ -23,6 +29,14 @@ public class PlayerMovement : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space) && onGround)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if(Input.GetAxis("Horizontal")<0 || Input.GetAxis("Horizontal") >0)
+        {
+            TurnCheck();
         }
     }
 
@@ -39,6 +53,39 @@ public class PlayerMovement : MonoBehaviour
         if (collision.collider.CompareTag("Ground"))
         {
             onGround = false;
+        }
+    }
+
+    private void TurnCheck()
+    {
+        if(Input.GetAxis("Horizontal")>0 && !IsRight)
+        {
+            Trun();
+        }
+        else if(Input.GetAxis("Horizontal")<0 && IsRight)
+        {
+            Trun();
+        }
+    }
+
+    public void Trun()
+    {
+        if(IsRight)
+        {
+            Vector3 rotator = new Vector3(transform.rotation.x, 180f, transform.rotation.z);
+            transform.rotation = Quaternion.Euler(rotator);
+            IsRight = !IsRight;
+
+            //tirn the camera follow object
+            _cameraFollowObject.CallTurn();
+        }
+        else
+        {
+            Vector3 rotator = new Vector3(transform.rotation.x, 0f, transform.rotation.z);
+            transform.rotation = Quaternion.Euler(rotator);
+            IsRight = !IsRight;
+
+            _cameraFollowObject.CallTurn();
         }
     }
 }
