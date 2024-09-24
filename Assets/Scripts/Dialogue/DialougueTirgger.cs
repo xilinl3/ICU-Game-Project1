@@ -5,10 +5,15 @@ using UnityEngine;
 public class DialogueTrigger : MonoBehaviour
 {
     public Dialogue dialogue;
+    private bool hasTriggered = false;
 
     public void TriggerDialogue()
     {
-        DialogueManager.Instance.StartDialogue(dialogue);
+        if (!hasTriggered) // 只有未触发过时才会触发对话
+        {
+            DialogueManager.Instance.StartDialogue(dialogue);
+            hasTriggered = true; // 对话触发后将标志设置为 true
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -20,6 +20,7 @@ public class DialogueManager : MonoBehaviour
     private bool isSentenceComplete = false;
     private string currentSentence = ""; // 当前正在显示的句子
     private float timeBetweenLines = 1.0f;
+    private PlayerMovement playerMovement;
 
     private void Awake()
     {
@@ -30,12 +31,14 @@ public class DialogueManager : MonoBehaviour
         {
             DialoguePanel.SetActive(false);
         }
+        playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
     }
 
     public void StartDialogue(Dialogue dialogue)
     {
         isDialogueActive = true;
         DialoguePanel.SetActive(true);
+        playerMovement.DisableMovement();
 
         //animator.Play("show");
 
@@ -94,11 +97,12 @@ public class DialogueManager : MonoBehaviour
         isDialogueActive = false;
         DialoguePanel.SetActive(false);
         //animator.Play("hide");
+        playerMovement.EnableMovement();
     }
 
     void Update()
     {
-        if (isDialogueActive && Input.GetKeyDown(KeyCode.Space))
+        if (isDialogueActive && Input.GetKeyDown(KeyCode.E))
         {
             if (isTyping)
             {

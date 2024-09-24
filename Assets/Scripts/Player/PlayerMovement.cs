@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 5f;
     private Rigidbody2D rb;
     private bool onGround;
+    private bool canMove = true;
 
     void Start()
     {
@@ -17,6 +18,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (!canMove)  // 如果不能移动，则不执行移动逻辑
+            return;
         float moveInput = Input.GetAxis("Horizontal");  
         rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
 
@@ -40,6 +43,18 @@ public class PlayerMovement : MonoBehaviour
         {
             onGround = false;
         }
+    }
+
+    public void DisableMovement()
+    {
+        canMove = false;
+        rb.velocity = Vector2.zero;  // 停止玩家移动
+    }
+
+    // 启用移动
+    public void EnableMovement()
+    {
+        canMove = true;
     }
 }
 
