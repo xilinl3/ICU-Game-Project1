@@ -16,4 +16,17 @@ public class UI : MonoBehaviour
     {
          Application.Quit();
     }
+
+    //继续键
+    public void Continue()
+    {
+        GameObject.Find("暂停菜单").SetActive(false);
+        Time.timeScale = 1;  
+    }
+
+    //重新开始
+    public void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 }
