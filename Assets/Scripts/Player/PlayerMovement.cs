@@ -11,16 +11,24 @@ public class PlayerMovement : MonoBehaviour
     public float sequentialJumpForce = 3f;
     public float dashDistance = 5f;
     public float dashDuration = 0.2f;
+    public bool IsRight;
+    public GameObject CameraFllowGo;
 
     private Rigidbody2D rb;
     private bool onGround;
     private bool canMove = true;
     private float remJumpCount = JUMPCOUNT;
     private bool isDashing = false;
+    private CameraFllowObject _cameraFollowObject;
+    private float _fallSpeedYDampingChangeThreshold;
+    
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        _cameraFollowObject = CameraFllowGo.GetComponent<CameraFllowObject>();
+
+        _fallSpeedYDampingChangeThreshold = CameraManager.Instance._fallSpeedYDampingChangeThreshold;
     }
 
     void Update()
@@ -29,17 +37,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         float moveInput = Input.GetAxis("Horizontal");
         rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
-
-        // 处理玩家朝向方向
-        if (moveInput < 0)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-        else if (moveInput > 0)
-        {
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -58,6 +55,28 @@ public class PlayerMovement : MonoBehaviour
         if(Input.GetKey(KeyCode.LeftShift))
         {
             StartCoroutine(Dash());
+        }
+
+        //if we are falling past a certain speed threshold
+        if(rb.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.Instance.IsLerpingYDamping && !CameraManager.Instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.Instance.LerpYDamping(true);
+        }
+        //if we are standing still or moving up
+        if(rb.velocity.y >= 0 && !CameraManager.Instance.IsLerpingYDamping && CameraManager.Instance.LerpedFromPlayerFalling)
+        {
+            //reset so it can be called again
+            CameraManager.Instance.LerpedFromPlayerFalling = false;
+
+            CameraManager.Instance.LerpYDamping(false);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if(Input.GetAxis("Horizontal")<0 || Input.GetAxis("Horizontal") >0)
+        {
+            TurnCheck();
         }
     }
 
@@ -105,5 +124,37 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = originalVelocity;
         rb.gravityScale = 1;
         isDashing = false;
+    }
+    private void TurnCheck()
+    {
+        if(Input.GetAxis("Horizontal")>0 && !IsRight)
+        {
+            Trun();
+        }
+        else if(Input.GetAxis("Horizontal")<0 && IsRight)
+        {
+            Trun();
+        }
+    }
+
+    public void Trun()
+    {
+        if(IsRight)
+        {
+            Vector3 rotator = new Vector3(transform.rotation.x, 180f, transform.rotation.z);
+            transform.rotation = Quaternion.Euler(rotator);
+            IsRight = !IsRight;
+
+            //tirn the camera follow object
+            _cameraFollowObject.CallTurn();
+        }
+        else
+        {
+            Vector3 rotator = new Vector3(transform.rotation.x, 0f, transform.rotation.z);
+            transform.rotation = Quaternion.Euler(rotator);
+            IsRight = !IsRight;
+
+            _cameraFollowObject.CallTurn();
+        }
     }
 }
