@@ -20,7 +20,7 @@ public class DialogueTrigger : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            UnityEngine.Debug.Log("检查到碰撞体");
+            UnityEngine.Debug.Log("检查到对话触发");
             TriggerDialogue();
         }
     }
