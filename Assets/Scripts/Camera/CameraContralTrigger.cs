@@ -9,6 +9,7 @@ public class CameraContralTrigger : MonoBehaviour
     public CustomInspectorObject customInspectorObject;
 
     private Collider2D _coll;
+    private float playerEnterXPosition;
 
     private void Start()
     {
@@ -32,7 +33,7 @@ public class CameraContralTrigger : MonoBehaviour
         if(collider.CompareTag("Player"))
         {
 
-            Vector2 exitDirection = (collider.transform.position - transform.position).normalized;
+            Vector2 exitDirection = (collider.transform.position - _coll.bounds.center).normalized;
 
             if(customInspectorObject.swapCamera && customInspectorObject.cameraOnLeft != null && customInspectorObject.cameraOnRight != null)
             {
