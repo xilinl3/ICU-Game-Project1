@@ -156,7 +156,9 @@ public class CameraManager : MonoBehaviour
 
     public void SwapCamera(CinemachineVirtualCamera cameraFromLeft, CinemachineVirtualCamera cameraFromRight, Vector2 triggerExitDirection)
     {
+      Debug.Log($"Trigger Exit Direction: {triggerExitDirection.x}");
       //if the current camera is the camera on the left and our trigger exit direction was on the right
+      //如果当前摄像机位于左侧，而我们的触发器出口方向位于右侧
       if(_currentCamera == cameraFromLeft && triggerExitDirection.x >0f)
       {
         //activate the new camera
