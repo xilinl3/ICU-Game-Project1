@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,8 +12,10 @@ public class PlayerMovement : MonoBehaviour
     public float sequentialJumpForce = 3f;
     public float dashDistance = 5f;
     public float dashDuration = 0.2f;
-    public bool IsRight;
     public GameObject CameraFllowGo;
+
+    public bool IsRight = true;
+    private int facingDir = 1;
 
     private Rigidbody2D rb;
     private bool onGround;
@@ -21,11 +24,14 @@ public class PlayerMovement : MonoBehaviour
     private bool isDashing = false;
     private CameraFllowObject _cameraFollowObject;
     private float _fallSpeedYDampingChangeThreshold;
+
+    private Animator anim;
     
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponentInChildren<Animator>();
         _cameraFollowObject = CameraFllowGo.GetComponent<CameraFllowObject>();
 
         _fallSpeedYDampingChangeThreshold = CameraManager.Instance._fallSpeedYDampingChangeThreshold;
@@ -37,6 +43,8 @@ public class PlayerMovement : MonoBehaviour
             return;
         float moveInput = Input.GetAxis("Horizontal");
         rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
+
+        HandleAnimation();
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -74,10 +82,23 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(Input.GetAxis("Horizontal")<0 || Input.GetAxis("Horizontal") >0)
+        if (Input.GetAxis("Horizontal")<0 || Input.GetAxis("Horizontal") >0)
         {
             TurnCheck();
         }
+    }
+
+    private void Flip()
+    {
+        facingDir = facingDir * -1;
+        transform.Rotate(0, 180, 0);
+    }
+
+    private void HandleAnimation()
+    {
+        anim.SetFloat("xVelocity", rb.velocity.x);
+        anim.SetFloat("yVelocity", rb.velocity.y);
+        anim.SetBool("onGround", onGround);
     }
 
     public void OnCollisionEnter2D(Collision2D collision)
@@ -127,12 +148,9 @@ public class PlayerMovement : MonoBehaviour
     }
     private void TurnCheck()
     {
-        if(Input.GetAxis("Horizontal")>0 && !IsRight)
+        if(Input.GetAxis("Horizontal")>0 && !IsRight || Input.GetAxis("Horizontal") < 0 && IsRight)
         {
-            Trun();
-        }
-        else if(Input.GetAxis("Horizontal")<0 && IsRight)
-        {
+            Flip();
             Trun();
         }
     }
